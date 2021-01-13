@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
-
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 
 //en git bash correr cuando estpy en entorno de desarrorllo, poner el comando "source ./config/env.sh"  y auomaticamente se exportan
@@ -43,7 +43,7 @@ app.use('/v1', require('./routes'));
 // app.listen(PORT, () => {
 // 	console.log(`Server listening on port ${PORT}`)
 // })
-console.log(process.env.PORT);
-app.listen(process.env.PORT, () => {
+console.log(PORT);
+app.listen(PORT, () => {
 	console.log(`Server listening on port ${process.env.PORT}`)
 })
