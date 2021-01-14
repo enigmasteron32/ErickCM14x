@@ -33,16 +33,8 @@ require('./config/passport')
 
 app.use('/v1', require('./routes'));
 
-
-
-
-
 // Iniciando el servidor
 
-// const PORT = 4001;
-// app.listen(PORT, () => {
-// 	console.log(`Server listening on port ${PORT}`)
-// })
 console.log(PORT);
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${process.env.PORT}`)
