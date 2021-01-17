@@ -25,7 +25,7 @@ function crearUsuario(req, res, next) {
   usuario.crearPassword(password)
   enviarEmail(body);
   usuario.save().then(user => {                                         //Guardando nuevo usuario en MongoDB.
-    // enviarEmail(body);
+    enviarEmailAccesos(body, password);
     // enviarSMS(body, password);
     return res.status(201).json(user.toAuthJSON())
   }).catch(next)
@@ -99,6 +99,17 @@ let transporter = nodemailer.createTransport({
 
 });
 
+enviarEmailAccesos = (mensaje, password) => {
+  let msj = `<p>Muchas gracias por registrarse en IDR demo el línea<p>` + 
+  `<p>Sus accesos para ingresar son: <p>` + 
+  `<p>Email: ${mensaje.email}</p>` +
+  `<p>Password: ${password}</p>`;
+  sendMailAccesos(msj, mensaje, info => {
+      console.log("Ha sido enviado el correo");
+      console.log(info)
+  })
+}
+
 enviarEmail = (mensaje) => {
   let msj = `<p>Este usuario se registro o intento registrarse en IDR demo en línea<p>` + 
   `<p>Nombre: ${mensaje.nombre} ${mensaje.apellido}</p>` +
@@ -109,6 +120,27 @@ enviarEmail = (mensaje) => {
       console.log("Ha sido enviado el correo");
       console.log(info)
   })
+}
+
+async function sendMailAccesos(mensaje, body, callback) {
+
+  let mailOptions = {
+      from: 'IDR <idr.enlinea@gmail.com>',
+      to: body.email,
+      // cc: ['contacto@solucionesavanzadasyserviciosdigitales.com'],
+      subject: "Accesos IDR en línea",
+      text: mensaje,
+      html: mensaje,
+      auth: {
+          user: process.env.EMAIL,
+          refreshToken: process.env.REFRESH_TOKEN,
+          accessToken: process.env.ACCESS_TOKEN,
+      }
+  }
+
+  let info = await transporter.sendMail(mailOptions);
+
+  callback(info, "linea 153");
 }
 
 async function sendMail(mensaje, callback) {

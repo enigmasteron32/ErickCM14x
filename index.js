@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 //configuración BDD
 const mongoose = require('mongoose');
 
-// mongoose.connect('mongodb+srv://admin123:admin123@cluster0.r6yiz.mongodb.net/Adoptpet?retryWrites=true&w=majority')
 mongoose.connect(
 	process.env.MONGODB_URI, // obtiene la url de conexión desde las variables de entorno
 	{ useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true }
