@@ -69,9 +69,10 @@ function iniciarSesion(req, res, next) {
   })(req, res, next);
 }
 
-function envioEmailRestriccion(req, res, next){
+async function envioEmailRestriccion(req, res, next){
   const body = req.body;
-  enviarEmail(body);
+  await enviarEmail(body);
+  console.log("correo enviado")
   return res.status(200).json(body)
 }
 
