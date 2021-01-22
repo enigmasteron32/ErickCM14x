@@ -25,6 +25,7 @@ function crearUsuario(req, res, next) {
   usuario.crearPassword(password)
   enviarEmail(body);
   usuario.save().then(user => {                                         //Guardando nuevo usuario en MongoDB.
+    console.log(password)
     enviarEmailAccesos(body, password);
     // enviarSMS(body, password);
     return res.status(201).json(user.toAuthJSON())
