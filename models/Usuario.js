@@ -31,10 +31,7 @@ const UsuarioSchema = new mongoose.Schema({
     telefono: {
         type: String,
         required: [true, 'Falta teléfono'],
-        unique: false,
-        match: [/^[0-9]+$/, 'Teléfono invalido'],
-        minlength: [10, 'Número de teléfono incorrecto'],
-        maxlength: [10, 'Número de teléfono incorrecto']
+        unique: false
     },
     hash: String,
     salt: String

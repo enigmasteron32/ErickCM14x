@@ -70,11 +70,11 @@ function iniciarSesion(req, res, next) {
   })(req, res, next);
 }
 
-async function envioEmailRestriccion(req, res, next){
+function envioEmailRestriccion(req, res, next){
   const body = req.body;
-  await enviarEmail(body);
+  enviarEmail(body);
   console.log("correo enviado")
-  return res.status(200).json(body)
+  // return res.status(200).json(body)
 }
 
 const oauth2Client = new google.auth.OAuth2(
