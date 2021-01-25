@@ -15,7 +15,7 @@ var http = require("https");
 var btoa = require("btoa");
 
 
-function crearUsuario(req, res, next) {
+async function crearUsuario(req, res, next) {
   // Instanciaremos un nuevo usuario utilizando la clase usuario
   const body = req.body,
     password = body.password
@@ -23,10 +23,12 @@ function crearUsuario(req, res, next) {
   delete body.password
   const usuario = new Usuario(body)
   usuario.crearPassword(password)
-  enviarEmail(body);
-  usuario.save().then(user => {                                         //Guardando nuevo usuario en MongoDB.
-    console.log(password)
-    enviarEmailAccesos(body, password);
+  let enviar = await enviarEmail(body);
+  console.log(enviar, "linea 27");
+  usuario.save().then(async user => {                                         //Guardando nuevo usuario en MongoDB.
+    console.log(password, "linea 29")
+    let enviar = await enviarEmailAccesos(body, password);
+    console.log(enviar, "linea 31");
     // enviarSMS(body, password);
     return res.status(201).json(user.toAuthJSON())
   }).catch(next)
@@ -43,7 +45,7 @@ function obtenerUsuarios(req, res, next) {                              //Obteni
       // console.log(err)
       return res.sendStatus(401)
     }
-	
+
     return res.json(user.publicData());
   }).catch(next);
 }
@@ -70,11 +72,12 @@ function iniciarSesion(req, res, next) {
   })(req, res, next);
 }
 
-function envioEmailRestriccion(req, res, next){
+async function envioEmailRestriccion(req, res, next) {
   const body = req.body;
-  enviarEmail(body);
+  let enviar = await enviarEmail(body);
+  console.log(enviar, "linea 78");
   console.log("correo enviado")
-  // return res.status(200).json(body)
+  return res.status(200).json(body)
 }
 
 const oauth2Client = new google.auth.OAuth2(
@@ -94,79 +97,85 @@ let transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-      type: 'OAuth2',
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
+    type: 'OAuth2',
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
   },
 
 });
 
 enviarEmailAccesos = (mensaje, password) => {
-  let msj = `<p>Muchas gracias por registrarse en IDR demo el línea<p>` + 
-  `<p>Sus accesos para ingresar son: <p>` + 
-  `<p>Email: ${mensaje.email}</p>` +
-  `<p>Password: ${password}</p>`;
-  sendMailAccesos(msj, mensaje, info => {
+  let msj = `<p>Muchas gracias por registrarse en IDR demo el línea<p>` +
+    `<p>Sus accesos para ingresar son: <p>` +
+    `<p>Email: ${mensaje.email}</p>` +
+    `<p>Password: ${password}</p>`;
+  return new Promise(resolve => {
+    sendMailAccesos(msj, mensaje, info => {
       console.log("Ha sido enviado el correo");
-      console.log(info)
+      console.log(info, "linea 115")
+      resolve(info)
+    })
   })
 }
 
 enviarEmail = (mensaje) => {
-  let msj = `<p>Este usuario se registro o intento registrarse en IDR demo en línea<p>` + 
-  `<p>Nombre: ${mensaje.nombre} ${mensaje.apellido}</p>` +
-  `<p>Empresa: ${mensaje.empresa}</p>` +
-  `<p>Email: ${mensaje.email}</p>` +
-  `<p>Telèfono: ${mensaje.telefono}</p>`;
-  sendMail(msj, info => {
+  let msj = `<p>Este usuario se registro o intento registrarse en IDR demo en línea<p>` +
+    `<p>Nombre: ${mensaje.nombre} ${mensaje.apellido}</p>` +
+    `<p>Empresa: ${mensaje.empresa}</p>` +
+    `<p>Email: ${mensaje.email}</p>` +
+    `<p>Telèfono: ${mensaje.telefono}</p>`;
+  return new Promise(resolve => {
+    sendMail(msj, info => {
       console.log("Ha sido enviado el correo");
-      console.log(info)
+      console.log(info, "linea 130")
+      resolve(info)
+    })
   })
 }
 
 async function sendMailAccesos(mensaje, body, callback) {
 
   let mailOptions = {
-      from: 'IDR <idr.enlinea@gmail.com>',
-      to: body.email,
-      // cc: ['contacto@solucionesavanzadasyserviciosdigitales.com'],
-      subject: "Accesos IDR en línea",
-      text: mensaje,
-      html: mensaje,
-      auth: {
-          user: process.env.EMAIL,
-          refreshToken: process.env.REFRESH_TOKEN,
-          accessToken: process.env.ACCESS_TOKEN,
-      }
+    from: 'IDR <idr.enlinea@gmail.com>',
+    to: body.email,
+    // cc: ['contacto@solucionesavanzadasyserviciosdigitales.com'],
+    subject: "Accesos IDR en línea",
+    text: mensaje,
+    html: mensaje,
+    auth: {
+      user: process.env.EMAIL,
+      refreshToken: process.env.REFRESH_TOKEN,
+      accessToken: process.env.ACCESS_TOKEN,
+    }
   }
 
   let info = await transporter.sendMail(mailOptions);
 
-  callback(info, "linea 153");
+  callback(info, "linea 154");
 }
 
 async function sendMail(mensaje, callback) {
 
   let mailOptions = {
-      from: 'IDR <idr.enlinea@gmail.com>',
-      to: 'idr.enlinea@gmail.com',
-      // cc: ['contacto@solucionesavanzadasyserviciosdigitales.com'],
-      subject: "Registro IDR en línea",
-      text: mensaje,
-      html: mensaje,
-      auth: {
-          user: process.env.EMAIL,
-          refreshToken: process.env.REFRESH_TOKEN,
-          accessToken: process.env.ACCESS_TOKEN,
-      }
+    from: 'IDR <idr.enlinea@gmail.com>',
+    to: 'idr.enlinea@gmail.com',
+    // cc: ['contacto@solucionesavanzadasyserviciosdigitales.com'],
+    subject: "Registro IDR en línea",
+    text: mensaje,
+    html: mensaje,
+    auth: {
+      user: process.env.EMAIL,
+      refreshToken: process.env.REFRESH_TOKEN,
+      accessToken: process.env.ACCESS_TOKEN,
+    }
   }
 
   let info = await transporter.sendMail(mailOptions);
 
-  callback(info, "linea 153");
+  callback(info, "linea 175");
 }
 
-enviarSMS = function(body, password){
+enviarSMS = function (body, password) {
 
   // client.messages
   // .create({
@@ -186,28 +195,28 @@ enviarSMS = function(body, password){
       "Cache-Control": "no-cache"
     }
   };
-  
+
   var req = http.request(options, function (res) {
     console.log(req);
     var chunks = [];
-  
+
     res.on("data", function (chunk) {
       chunks.push(chunk);
     });
-  
+
     res.on("end", function () {
       var body = Buffer.concat(chunks);
       console.log(body.toString());
     });
   });
-  
+
   req.write(JSON.stringify({
-    "message":`¡Bienvenido ${body.nombre}!, tus credenciales de acceso a IDR demo en línea son las siguientes. Usuario: ${body.email} | Password: ${password}`,
-    "tpoa":"Sender",
+    "message": `¡Bienvenido ${body.nombre}!, tus credenciales de acceso a IDR demo en línea son las siguientes. Usuario: ${body.email} | Password: ${password}`,
+    "tpoa": "Sender",
     "recipient":
       [
         {
-          "msisdn":`+52${body.telefono}`
+          "msisdn": `+52${body.telefono}`
         }
       ]
   }));
