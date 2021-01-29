@@ -5,6 +5,8 @@ const passport = require('passport');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 // console.log(accountSid,authToken )
 
 const nodemailer = require("nodemailer");
@@ -77,7 +79,8 @@ async function envioEmailRestriccion(req, res, next) {
   let enviar = await enviarEmail(body);
   console.log(enviar, "linea 78");
   console.log("correo enviado")
-  return res.status(200).json(body)
+  return enviar
+  res.status(200).json(body)
 }
 
 const oauth2Client = new google.auth.OAuth2(
@@ -109,12 +112,34 @@ enviarEmailAccesos = (mensaje, password) => {
     `<p>Sus accesos para ingresar son: <p>` +
     `<p>Email: ${mensaje.email}</p>` +
     `<p>Password: ${password}</p>`;
-  return new Promise(resolve => {
-    sendMailAccesos(msj, mensaje, info => {
-      console.log("Ha sido enviado el correo");
-      console.log(info, "linea 115")
-      resolve(info)
-    })
+  // return new Promise(resolve => {
+  //   sendMailAccesos(msj, mensaje, info => {
+  //     console.log("Ha sido enviado el correo");
+  //     console.log(info, "linea 115")
+  //     resolve(info)
+  //   })
+  // })
+  const msg = {
+    to: mensaje.email, // Change to your recipient
+    from: {
+      name: "IDR en línea",
+      email: 'contacto@solucionesavanzadasyserviciosdigitales.com', // Change to your verified sender
+    },
+    subject: 'Accesos IDR',
+    text: msj,
+    html: msj,
+  }
+
+  return new Promise((resolve) => {
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+        resolve("Mensaje enviado")
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   })
 }
 
@@ -124,12 +149,33 @@ enviarEmail = (mensaje) => {
     `<p>Empresa: ${mensaje.empresa}</p>` +
     `<p>Email: ${mensaje.email}</p>` +
     `<p>Telèfono: ${mensaje.telefono}</p>`;
-  return new Promise(resolve => {
-    sendMail(msj, info => {
-      console.log("Ha sido enviado el correo");
-      console.log(info, "linea 130")
-      resolve(info)
-    })
+  // return new Promise(resolve => {
+  //   sendMail(msj, info => {
+  //     console.log("Ha sido enviado el correo");
+  //     console.log(info, "linea 130")
+  //     resolve(info)
+  //   })
+  // })
+  const msg = {
+    to: ["contacto@solucionesavanzadasyserviciosdigitales.com", "idr.enlinea@gmail.com"], // Change to your recipient
+    from: {
+      name: "IDR en línea",
+      email: 'contacto@solucionesavanzadasyserviciosdigitales.com', // Change to your verified sender
+    },
+    subject: 'IDR',
+    text: msj,
+    html: msj,
+  }
+  return new Promise((resolve) => {
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+        resolve("Mensaje enviado")
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   })
 }
 
