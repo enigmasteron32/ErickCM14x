@@ -130,8 +130,8 @@ enviarEmailAccesos = (mensaje, password) => {
     html: msj,
   }
 
-  return new Promise((resolve) => {
-    sgMail
+  return new Promise(async (resolve) => {
+    await sgMail
       .send(msg)
       .then(() => {
         console.log('Email sent')
@@ -166,8 +166,8 @@ enviarEmail = (mensaje) => {
     text: msj,
     html: msj,
   }
-  return new Promise((resolve) => {
-    sgMail
+  return new Promise(async (resolve) => {
+    await sgMail
       .send(msg)
       .then(() => {
         console.log('Email sent')
