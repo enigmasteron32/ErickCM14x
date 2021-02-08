@@ -29,10 +29,10 @@ async function crearUsuario(req, res, next) {
   // console.log(enviar, "linea 27");
 
   let msj = `<p>Este usuario se registro o intento registrarse en IDR demo en línea<p>` +
-  `<p>Nombre: ${body.nombre} ${body.apellido}</p>` +
-  `<p>Empresa: ${body.empresa}</p>` +
-  `<p>Email: ${body.email}</p>` +
-  `<p>Telèfono: ${body.telefono}</p>`;
+    `<p>Nombre: ${body.nombre} ${body.apellido}</p>` +
+    `<p>Empresa: ${body.empresa}</p>` +
+    `<p>Email: ${body.email}</p>` +
+    `<p>Telèfono: ${body.telefono}</p>`;
 
   const msg = {
     to: ["contacto@solucionesavanzadasyserviciosdigitales.com", "idr.enlinea@gmail.com"], // Change to your recipient
@@ -44,16 +44,24 @@ async function crearUsuario(req, res, next) {
     text: msj,
     html: msj,
   }
-  let msjSend = await sgMail
-    .send(msg)
-    .then(() => {
-      console.log('Email sent')
-    })
-    .catch((error) => {
-      console.error(error)
-    })
 
-    console.log(msjSend);
+    (async () => {
+      try {
+        let msjSend = await sgMail
+          .send(msg)
+          .then(() => {
+            console.log('Email sent')
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+        console.log(msjSend);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+
+
 
 
   usuario.save().then(async user => {                                         //Guardando nuevo usuario en MongoDB.
@@ -63,9 +71,9 @@ async function crearUsuario(req, res, next) {
     // console.log(enviar, "linea 31");
 
     let msj = `<p>Muchas gracias por registrarse en IDR demo el línea<p>` +
-    `<p>Sus accesos para ingresar son: <p>` +
-    `<p>Email: ${body.email}</p>` +
-    `<p>Password: ${password}</p>`;
+      `<p>Sus accesos para ingresar son: <p>` +
+      `<p>Email: ${body.email}</p>` +
+      `<p>Password: ${password}</p>`;
 
     const msg = {
       to: mensaje.email, // Change to your recipient
@@ -77,17 +85,23 @@ async function crearUsuario(req, res, next) {
       text: msj,
       html: msj,
     }
-  
-      let msjSend = await sgMail
-        .send(msg)
-        .then(() => {
-          console.log('Email sent')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
 
-        console.log(msjSend);
+      (async () => {
+        try {
+          let msjSend = await sgMail
+            .send(msg)
+            .then(() => {
+              console.log('Email sent')
+            })
+            .catch((error) => {
+              console.error(error)
+            })
+        } catch (error) {
+          console.log(error);
+        }
+      })();
+
+    console.log(msjSend);
 
     // enviarSMS(body, password);
     return res.status(201).json(user.toAuthJSON())
