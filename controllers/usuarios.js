@@ -86,22 +86,19 @@ async function crearUsuario(req, res, next) {
       html: msj,
     }
 
-      (async () => {
-        try {
-          let msjSend = await sgMail
-            .send(msg)
-            .then(() => {
-              console.log('Email sent')
-            })
-            .catch((error) => {
-              console.error(error)
-            })
-        } catch (error) {
-          console.log(error);
-        }
-      })();
-
-    console.log(msjSend);
+    try {
+      let msjSend = await sgMail
+        .send(msg)
+        .then(() => {
+          console.log('Email sent')
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        console.log(msjSend);
+    } catch (error) {
+      console.log(error);
+    }
 
     // enviarSMS(body, password);
     return res.status(201).json(user.toAuthJSON())
