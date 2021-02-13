@@ -44,25 +44,19 @@ async function crearUsuario(req, res, next) {
     text: msj,
     html: msj,
   }
-
-    (async () => {
-      try {
-        let msjSend = await sgMail
-          .send(msg)
-          .then(() => {
-            console.log('Email sent')
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-        console.log(msjSend);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-
-
-
+  try {
+    let msjSend = await sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+    console.log(msjSend);
+  } catch (error) {
+    console.log(error);
+  }
 
   usuario.save().then(async user => {                                         //Guardando nuevo usuario en MongoDB.
     console.log(password, "linea 29")
@@ -95,7 +89,7 @@ async function crearUsuario(req, res, next) {
         .catch((error) => {
           console.error(error)
         })
-        console.log(msjSend);
+      console.log(msjSend);
     } catch (error) {
       console.log(error);
     }
