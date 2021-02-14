@@ -70,7 +70,7 @@ async function crearUsuario(req, res, next) {
       `<p>Password: ${password}</p>`;
 
     const msg = {
-      to: mensaje.email, // Change to your recipient
+      to: body.email, // Change to your recipient
       from: {
         name: "IDR en línea",
         email: 'contacto@solucionesavanzadasyserviciosdigitales.com', // Change to your verified sender
