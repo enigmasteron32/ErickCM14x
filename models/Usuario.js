@@ -30,7 +30,10 @@ const UsuarioSchema = new mongoose.Schema({
     },
     telefono: {
         type: String,
-        required: [true, 'Falta teléfono'],
+        unique: false
+    },
+    telefono2: {
+        type: String,
         unique: false
     },
     hash: String,
@@ -83,6 +86,7 @@ UsuarioSchema.methods.publicData = function () {
         nombre: this.nombre,
         apellido: this.apellido,
         telefono: this.telefono,
+        telefono2: this.telefono2,
         empresa: this.empresa,
     }
 }

@@ -147,6 +147,7 @@ enviarEmail = (mensaje) => {
     `<p>Empresa: ${mensaje.empresa}</p>` +
     `<p>Email: ${mensaje.email}</p>` +
     `<p>Telèfono: ${mensaje.telefono}</p>`;
+    `<p>Telèfono 2: ${mensaje.telefono2}</p>`;
   // return new Promise(resolve => {
   //   sendMail(msj, info => {
   //     console.log("Ha sido enviado el correo");
